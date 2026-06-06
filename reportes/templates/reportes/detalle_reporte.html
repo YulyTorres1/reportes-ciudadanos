@@ -44,7 +44,7 @@
 
         {% if reporte.latitud %}
         <div class="mt-4">
-            <p class="fw-500 mb-1">📍 Ubicación</p>
+            <p class="fw-bold mb-1">📍 Ubicación</p>
             <div id="mapa" style="height:300px;border-radius:10px;"></div>
         </div>
         {% endif %}
@@ -90,10 +90,14 @@
 {% block scripts %}
 {% if reporte.latitud %}
 <script>
-    const map = L.map('mapa').setView([{{ reporte.latitud }}, {{ reporte.longitud }}], 15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    L.marker([{{ reporte.latitud }}, {{ reporte.longitud }}])
-     .addTo(map).bindPopup('{{ reporte.titulo }}').openPopup();
+    const lat = parseFloat("{{ reporte.latitud }}".replace(',', '.'));
+    const lng = parseFloat("{{ reporte.longitud }}".replace(',', '.'));
+    const map = L.map('mapa').setView([lat, lng], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+    L.marker([lat, lng]).addTo(map)
+     .bindPopup('{{ reporte.titulo }}').openPopup();
 </script>
 {% endif %}
 {% endblock %}
