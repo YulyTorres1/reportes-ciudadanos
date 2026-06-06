@@ -72,3 +72,9 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='http://127.0.0.1:8000',
+    cast=Csv()
+)
