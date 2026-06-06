@@ -1,0 +1,62 @@
+{% extends 'reportes/base.html' %}
+{% block titulo %}Nuevo reporte{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center">
+<div class="col-md-8">
+    <div class="card p-4">
+        <h3 class="mb-1">Nuevo reporte ciudadano</h3>
+        <p class="text-muted small mb-4">Reporta un problema en tu ciudad para que el municipio lo atienda.</p>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label fw-bold">Título <span class="text-danger">*</span></label>
+                {{ form.titulo }}
+                <div class="form-text">Describe brevemente el problema.</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Categoría <span class="text-danger">*</span></label>
+                {{ form.categoria }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Descripción <span class="text-danger">*</span></label>
+                {{ form.descripcion }}
+                <div class="form-text">Incluye detalles como la dirección exacta, hace cuánto ocurre, etc.</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Foto del problema</label>
+                {{ imagen_form.archivo }}
+                <div class="form-text">Opcional. Máximo 5MB.</div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-bold">Ubicación en el mapa</label>
+                <p class="text-muted small">Haz clic en el mapa para marcar el lugar exacto del problema.</p>
+                <div id="mapa" style="height:380px;border-radius:10px;border:1px solid #dee2e6;"></div>
+                {{ form.latitud }}
+                {{ form.longitud }}
+                <div id="coords-info" class="form-text mt-1 text-success" style="display:none">
+                    ✅ Ubicación marcada correctamente.
+                </div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">Enviar reporte</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    const map = L.map('mapa').setView([7.0653, -73.8537], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    let marker;
+    map.on('click', function(e) {
+        if (marker) map.removeLayer(marker);
+        marker = L.marker(e.latlng).addTo(map)
+            .bindPopup('Problema reportado aquí').openPopup();
+        document.getElementById('id_latitud').value  = e.latlng.lat;
+        document.getElementById('id_longitud').value = e.latlng.lng;
+        document.getElementById('coords-info').style.display = 'block';
+    });
+</script>
+{% endblock %}

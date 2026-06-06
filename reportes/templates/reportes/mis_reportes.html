@@ -1,0 +1,48 @@
+{% extends 'reportes/base.html' %}
+{% block titulo %}Mis reportes{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Mis reportes</h2>
+    <a href="{% url 'reportes:crear' %}" class="btn btn-primary">+ Nuevo reporte</a>
+</div>
+{% if reportes %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Título</th>
+                    <th>Categoría</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for r in reportes %}
+                <tr>
+                    <td class="fw-500">{{ r.titulo }}</td>
+                    <td>{{ r.categoria.icono }} {{ r.categoria.nombre }}</td>
+                    <td>
+                        <span class="badge badge-estado-{{ r.estado }} rounded-pill px-3">
+                            {{ r.get_estado_display }}
+                        </span>
+                    </td>
+                    <td class="text-muted small">{{ r.fecha_creacion|date:"d/m/Y" }}</td>
+                    <td>
+                        <a href="{% url 'reportes:detalle' r.pk %}" class="btn btn-outline-primary btn-sm">Ver</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5">
+    <div style="font-size:3rem">📋</div>
+    <p class="text-muted mt-2">Aún no has creado ningún reporte.</p>
+    <a href="{% url 'reportes:crear' %}" class="btn btn-primary">Crear mi primer reporte</a>
+</div>
+{% endif %}
+{% endblock %}

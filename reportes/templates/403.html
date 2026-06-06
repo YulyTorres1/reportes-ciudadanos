@@ -1,0 +1,13 @@
+{% extends 'reportes/base.html' %}
+{% block titulo %}Acceso denegado{% endblock %}
+{% block contenido %}
+<div class="card" style="max-width:500px;margin:4rem auto">
+    <div class="empty-state">
+        <div class="icon">🔒</div>
+        <h5>Acceso denegado</h5>
+        <p>No tienes permiso para acceder a esta sección.<br>
+        Esta área es exclusiva para funcionarios municipales.</p>
+        <a href="{% url 'reportes:inicio' %}" class="btn btn-primary mt-2">← Volver al inicio</a>
+    </div>
+</div>
+{% endblock %}

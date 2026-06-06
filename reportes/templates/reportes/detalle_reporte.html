@@ -1,0 +1,99 @@
+{% extends 'reportes/base.html' %}
+{% block titulo %}{{ reporte.titulo }}{% endblock %}
+{% block contenido %}
+<a href="{% url 'reportes:inicio' %}" class="btn btn-outline-secondary btn-sm mb-3">← Volver</a>
+
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+                <span class="badge badge-estado-{{ reporte.estado }} rounded-pill px-3 mb-2">
+                    {{ reporte.get_estado_display }}
+                </span>
+                <h2 class="mb-1">{{ reporte.titulo }}</h2>
+                <p class="text-muted small">
+                    {{ reporte.categoria.icono }} {{ reporte.categoria.nombre }} &nbsp;·&nbsp;
+                    {{ reporte.fecha_creacion|date:"d/m/Y H:i" }} &nbsp;·&nbsp;
+                    por <strong>{{ reporte.usuario.username }}</strong>
+                </p>
+            </div>
+            {% if user.is_staff %}
+            <form method="post" action="{% url 'reportes:cambiar_estado' reporte.pk %}" class="d-flex gap-2 align-items-center">
+                {% csrf_token %}
+                <select name="estado" class="form-select form-select-sm" style="width:auto">
+                    <option value="pendiente"   {% if reporte.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                    <option value="en_revision" {% if reporte.estado == 'en_revision' %}selected{% endif %}>En revisión</option>
+                    <option value="resuelto"    {% if reporte.estado == 'resuelto' %}selected{% endif %}>Resuelto</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-outline-primary">Actualizar</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <p class="mt-3">{{ reporte.descripcion }}</p>
+
+        {% if reporte.imagenes.all %}
+        <div class="row g-2 mt-2">
+            {% for img in reporte.imagenes.all %}
+            <div class="col-md-4">
+                <img src="{{ img.archivo.url }}" class="img-fluid rounded" style="max-height:220px;width:100%;object-fit:cover">
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if reporte.latitud %}
+        <div class="mt-4">
+            <p class="fw-500 mb-1">📍 Ubicación</p>
+            <div id="mapa" style="height:300px;border-radius:10px;"></div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-4">
+        <h5 class="mb-3">Comentarios ({{ reporte.comentarios.count }})</h5>
+        {% for c in reporte.comentarios.all %}
+        <div class="d-flex gap-3 mb-3">
+            <div style="width:36px;height:36px;border-radius:50%;background:#0d6efd;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">
+                {{ c.usuario.username|first|upper }}
+            </div>
+            <div class="flex-grow-1">
+                <div class="d-flex gap-2 align-items-center">
+                    <strong class="small">{{ c.usuario.username }}</strong>
+                    <span class="text-muted" style="font-size:11px">{{ c.fecha|date:"d/m/Y H:i" }}</span>
+                </div>
+                <p class="mb-0 mt-1">{{ c.contenido }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">Sé el primero en comentar.</p>
+        {% endfor %}
+
+        {% if user.is_authenticated %}
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            {{ comentario_form.contenido }}
+            <button type="submit" class="btn btn-primary btn-sm mt-2">Comentar</button>
+        </form>
+        {% else %}
+        <p class="text-muted small mt-3">
+            <a href="{% url 'reportes:login' %}">Inicia sesión</a> para comentar.
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if reporte.latitud %}
+<script>
+    const map = L.map('mapa').setView([{{ reporte.latitud }}, {{ reporte.longitud }}], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.marker([{{ reporte.latitud }}, {{ reporte.longitud }}])
+     .addTo(map).bindPopup('{{ reporte.titulo }}').openPopup();
+</script>
+{% endif %}
+{% endblock %}
