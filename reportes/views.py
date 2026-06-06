@@ -108,14 +108,17 @@ def crear_reporte(request):
         form        = ReporteForm(request.POST)
         imagen_form = ImagenForm(request.POST, request.FILES)
         if form.is_valid():
-            reporte          = form.save(commit=False)
-            reporte.usuario  = request.user
+            reporte         = form.save(commit=False)
+            reporte.usuario = request.user
             reporte.save()
-            if imagen_form.is_valid() and imagen_form.cleaned_data.get('archivo'):
-                img         = imagen_form.save(commit=False)
-                img.reporte = reporte
-                img.save()
-            messages.success(request, '¡Reporte enviado exitosamente! El municipio lo revisará pronto.')
+            try:
+                if imagen_form.is_valid() and imagen_form.cleaned_data.get('archivo'):
+                    img         = imagen_form.save(commit=False)
+                    img.reporte = reporte
+                    img.save()
+            except Exception as e:
+                messages.warning(request, f'Reporte creado pero hubo un problema con la imagen: {e}')
+            messages.success(request, '¡Reporte enviado exitosamente!')
             return redirect('reportes:detalle', pk=reporte.pk)
     else:
         form        = ReporteForm()
