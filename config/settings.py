@@ -78,3 +78,8 @@ CSRF_TRUSTED_ORIGINS = config(
     default='http://127.0.0.1:8000',
     cast=Csv()
 )
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME', default=''),
+    'API_KEY':    config('CLOUDINARY_API_KEY', default=''),
+    'API_SECRET': config('CLOUDINARY_API_SECRET', default=''),
+}
