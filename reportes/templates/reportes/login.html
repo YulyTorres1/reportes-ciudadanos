@@ -1,31 +1,27 @@
 {% extends 'reportes/base.html' %}
 {% block titulo %}Iniciar sesión{% endblock %}
 {% block contenido %}
-<div class="row justify-content-center">
-<div class="col-md-5 col-lg-4">
-    <div class="text-center mb-4">
-        <div style="font-size:2.5rem">🏙️</div>
-        <h4 class="fw-700 mt-2">Bienvenido de nuevo</h4>
-        <p class="text-muted small">Inicia sesión para gestionar tus reportes</p>
+<div class="d-flex justify-content-center align-items-center" style="min-height:70vh">
+<div class="auth-card">
+    <div class="auth-icon">🔐</div>
+    <h4 class="text-center fw-700 mb-1" style="font-size:1.3rem;font-weight:700">Bienvenido de nuevo</h4>
+    <p class="text-center mb-4" style="font-size:.85rem;color:#64748b">Inicia sesión para gestionar tus reportes</p>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                <div style="font-size:.78rem;color:#dc2626;margin-top:4px">{{ field.errors.0 }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100 py-2 mt-2" style="font-size:.95rem">Iniciar sesión</button>
+    </form>
+    <div class="text-center mt-4" style="font-size:.85rem;color:#64748b">
+        ¿No tienes cuenta? <a href="{% url 'reportes:registro' %}" style="color:#2563eb;font-weight:600">Regístrate gratis</a>
     </div>
-    <div class="card p-4">
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-            <div class="mb-3">
-                <label class="form-label">{{ field.label }}</label>
-                {{ field }}
-                {% if field.errors %}
-                    <div class="text-danger" style="font-size:.8rem;margin-top:4px">{{ field.errors.0 }}</div>
-                {% endif %}
-            </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-primary w-100 py-2 mt-1">Iniciar sesión</button>
-        </form>
-    </div>
-    <p class="text-center text-muted small mt-3">
-        ¿No tienes cuenta? <a href="{% url 'reportes:registro' %}" class="text-primary fw-600">Regístrate gratis</a>
-    </p>
 </div>
 </div>
 {% endblock %}
